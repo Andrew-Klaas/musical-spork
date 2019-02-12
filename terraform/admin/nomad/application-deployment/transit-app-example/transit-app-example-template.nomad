@@ -19,7 +19,7 @@ job "transit-app-example" {
             driver = "docker"
             config {
                 #image = "airedale/transit-demo:token"
-                image = "aklaas2/transit-app-example:latest"
+                image = "aklaas2/transit-app-example-test:latest"
                 volumes = ["local/config.ini:/usr/src/app/config/config.ini"]
                 network_mode = "host"
                 port_map {
@@ -30,13 +30,15 @@ job "transit-app-example" {
                 data = <<EOH
                 [DEFAULT]
                 LogLevel = DEBUG
+{{ with secret "lob_a/workshop/database/creds/workshop-app"  }}
 
                 [DATABASE]
                 Address=db.service.consul
                 Port=3306
-                User=vaultadmin
-                Password=vaultadminpassword
+                User={{ .Data.username }}
+                Password={{ .Data.password }}
                 Database=my_app
+{{ end }}
 
                 [VAULT]
                 Enabled = True
@@ -45,7 +47,7 @@ job "transit-app-example" {
                 Token=
                 KeyPath=lob_a/workshop/transit
                 KeyName=customer-key
-                DynamicDBCreds = true
+                DynamicDBCreds = false
                 DynamicDBCredsPath = lob_a/workshop/database/creds/workshop-app
                 EOH
                 destination = "local/config.ini"
