@@ -74,7 +74,7 @@ class DbClient:
             resp = self.vault_client.read(path)
             self.username = resp['data']['username']
             self.password = resp['data']['password']
-            logger.debug('Retrieved username {} and password {} from Vault.'.format(self.username, self.password))
+            logger.info('Retrieved username {} and password {} from Vault.'.format(self.username, self.password))
         except Exception as e:
             logger.error('An error occurred reading DB creds from path {}.  Error: {}'.format(path, e))
 

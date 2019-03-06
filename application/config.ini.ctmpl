@@ -19,4 +19,4 @@ KeyPath=lob_a/workshop/transit
 KeyName=customer-key
 
 [CONSUL]
-DEBUG=False
+DEBUG = {{ key "service/profitapp/debug" }}

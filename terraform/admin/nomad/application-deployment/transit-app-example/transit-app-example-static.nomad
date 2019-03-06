@@ -30,8 +30,8 @@ job "transit-app-example" {
                 data = <<EOH
                 [DEFAULT]
                 LogLevel = WARN
-{{ with secret "lob_a/workshop/database/creds/workshop-app"  }}
-
+		
+{{ with secret "lob_a/workshop/kv/transit-app-example"  }}
                 [DATABASE]
                 Address=db.service.consul
                 Port=3306

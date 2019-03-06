@@ -137,10 +137,10 @@ YUM=$(which yum 2>/dev/null)
 if [ "${launch_nomad_jobs_automatically}" = true ] ; then
   if [[ ! -z $${YUM} ]]; then
     /usr/local/bin/nomad run /home/ec2-user/nomad/fabio-us-east-1.nomad
-    /usr/local/bin/nomad run /home/ec2-user/nomad/application-deployment/transit-app-example/transit-app-example.nomad
+    /usr/local/bin/nomad run /home/ec2-user/nomad/application-deployment/transit-app-example/transit-app-example-library.nomad
   else 
     /usr/local/bin/nomad run /home/ubuntu/nomad/fabio-us-east-1.nomad
-    /usr/local/bin/nomad run /home/ubuntu/nomad/application-deployment/transit-app-example/transit-app-example.nomad
+    /usr/local/bin/nomad run /home/ubuntu/nomad/application-deployment/transit-app-example/transit-app-example-library.nomad
   fi
 fi
 

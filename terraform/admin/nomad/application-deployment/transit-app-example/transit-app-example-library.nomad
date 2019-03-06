@@ -30,15 +30,13 @@ job "transit-app-example" {
                 data = <<EOH
                 [DEFAULT]
                 LogLevel = WARN
-{{ with secret "lob_a/workshop/database/creds/workshop-app"  }}
 
                 [DATABASE]
                 Address=db.service.consul
                 Port=3306
-                User={{ .Data.username }}
-                Password={{ .Data.password }}
+                User=vaultadmin
+                Password=vaultadminpassword
                 Database=my_app
-{{ end }}
 
                 [VAULT]
                 Enabled = True
@@ -47,7 +45,7 @@ job "transit-app-example" {
                 Token=
                 KeyPath=lob_a/workshop/transit
                 KeyName=customer-key
-                DynamicDBCreds = false
+                DynamicDBCreds = true
                 DynamicDBCredsPath = lob_a/workshop/database/creds/workshop-app
                 EOH
                 destination = "local/config.ini"

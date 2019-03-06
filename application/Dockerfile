@@ -1,6 +1,6 @@
 FROM python:3
 
-RUN pip3 install Flask mysql-connector-python hvac
+RUN pip3 install Flask mysql-connector-python hvac requests
 
 WORKDIR /usr/src/app
 ADD templates ./templates/

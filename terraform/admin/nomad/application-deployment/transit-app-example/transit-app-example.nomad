@@ -29,7 +29,7 @@ job "transit-app-example" {
             template {
                 data = <<EOH
                 [DEFAULT]
-                LogLevel = DEBUG
+                LogLevel = WARN
 
                 [DATABASE]
                 Address=db.service.consul
