@@ -18,6 +18,11 @@ data aws_ami "hashistack" {
   }
 
   filter {
+    name   = "tag:Owner"
+    values = ["${var.image_owner}"]
+  }
+
+  filter {
     name   = "tag:Release"
     values = ["${var.image_release}"]
   }

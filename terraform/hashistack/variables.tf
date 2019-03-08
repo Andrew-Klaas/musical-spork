@@ -9,6 +9,7 @@ variable "instance_profile" {}
 variable "kms_id" {}
 variable "owner" {}
 variable "ttl" {}
+variable "image_owner" {}
 variable "image_release" {}
 
 variable "subnet_ids" {

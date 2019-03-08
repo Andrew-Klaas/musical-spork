@@ -2,9 +2,9 @@ variable "owner" {
   description = "User responsible for this cloud environment, resources will be tagged with this"
 }
 
-variable "ttl" {
-  default     = 72
-  description = "Tag indicating time to live for this cloud environment"
+variable "image_owner" {
+  default     = "*"
+  description = "email address of AMI owner"
 }
 
 variable "image_release" {
@@ -21,15 +21,6 @@ variable "nginx_count" {
   default     = 2
 }
 
-variable "vault_cloud_auto_init_and_unseal" {
-  type        = "string"
-  description = "Enable or disable automatic Vault initialization and unseal. True or false, string."
-}
-
-variable "vault_auto_replication_setup" {
-  type        = "string"
-  description = "Enable or disable automatic replication configuration between Vault clusters. True or false, string."
-}
 
 variable "operating_system" {
   default     = "centos"
@@ -46,13 +37,30 @@ variable "ssh_user_name" {
   description = "Default ssh username for provisioning, ec2-user for rhel systems, ubuntu for ubuntu systems"
 }
 
+variable "ttl" {
+  default     = 72
+  description = "Tag indicating time to live for this cloud environment"
+}
+
+variable "launch_nomad_jobs_automatically" {
+  type        = "string"
+  default     = "true"
+  description = "Enable or disable automatic Nomad deployment of Fabio and other demo applications"
+}
+
+variable "vault_auto_replication_setup" {
+  default     = "true"
+  description = "Enable or disable automatic replication configuration between Vault clusters"
+  }
+
+variable "vault_cloud_auto_init_and_unseal" {
+  default = "true"
+  type        = "string"
+  description = "Enable or disable automatic Vault initialization and unseal. True or false, string."
+}
+
 variable "root_domain" {
   default     = "none"
   description = "Domain to use for vanity demos"
 }
 
-variable "launch_nomad_jobs_automatically" {
-  type        = "string" 
-  default     = "true"
-  description = "Enable or disable automatic Nomad deployment of Fabio and other demo applications"
-}

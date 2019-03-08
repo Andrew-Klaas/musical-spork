@@ -16,6 +16,16 @@ data aws_ami "hashistack" {
     name   = "tag:OS-Version"
     values = ["${var.operating_system_version}"]
   }
+
+  filter {
+    name   = "tag:Owner"
+    values = ["${var.image_owner}"]
+  }
+
+  filter {
+    name   = "tag:Release"
+    values = ["${var.image_release}"]
+  }
 }
 
 resource "aws_key_pair" "main" {

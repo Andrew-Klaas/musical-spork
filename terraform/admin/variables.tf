@@ -8,6 +8,7 @@ variable "region" {}
 variable "instance_profile" {}
 variable "owner" {}
 variable "ttl" {}
+variable "image_owner" {}
 variable "image_release" {}
 
 variable "subnet_ids" {
@@ -76,3 +77,4 @@ variable "launch_nomad_jobs_automatically" {
   default     = "true"
   description = "Enable or disable automatic Nomad deployment of Fabio and other demo applications"
 }
+
