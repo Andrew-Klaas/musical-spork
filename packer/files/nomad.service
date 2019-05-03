@@ -12,10 +12,11 @@ ExecStartPre=/usr/local/bin/vault agent -config /etc/vault-agent.d/vault-agent.h
 ExecStart=/usr/bin/nomad-vault.sh
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
-RestartSec=2
-StartLimitBurst=3
-StartLimitIntervalSec=10
+RestartSec=6
+StartLimitBurst=100
+StartLimitIntervalSec=650
 LimitNOFILE=65536
+TasksMax=infinity
 
 [Install]
 WantedBy=multi-user.target

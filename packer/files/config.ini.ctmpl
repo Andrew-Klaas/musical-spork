@@ -1,5 +1,5 @@
 [DEFAULT]
-LogLevel = ERROR
+LogLevel = WARN
 
 [DATABASE]
 Address=db.service.consul
@@ -19,4 +19,4 @@ KeyPath=lob_a/workshop/transit
 KeyName=customer-key
 
 [CONSUL]
-DEBUG = {{ key "service/profitapp/debug" }}
+DEBUG = {{ key "service/web/debug" }}

@@ -59,6 +59,17 @@ resource "aws_instance" "admin" {
       private_key = "${var.private_key_data}"
     }
   }
+  
+  provisioner "file" {
+    source      = "${path.root}/../application"
+    destination = "/home/${var.ssh_user_name}"
+
+    connection {
+      type        = "ssh"
+      user        = "${var.ssh_user_name}"
+      private_key = "${var.private_key_data}"
+    }
+  }
 
   tags {
     Name             = "${var.cluster_name} - admin"

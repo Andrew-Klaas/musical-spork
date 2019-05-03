@@ -12,3 +12,6 @@
 notes
 packer/vars.json
 private_key.pem
+
+# swap
+*.swp
