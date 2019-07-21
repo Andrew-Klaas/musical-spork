@@ -2,6 +2,7 @@ provider "aws" {
   region = "${var.region}"
 }
 
+
 data aws_ami "hashistack" {
   most_recent = true
   owners      = ["self"]
