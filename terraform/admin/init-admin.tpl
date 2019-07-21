@@ -48,6 +48,15 @@ for region in ${remote_regions}; do
   done
 done
 
+for region in ${local_region} ${remote_regions}; do
+  vault_service_avail="null"
+  while [ "$${vault_service_avail}" == "null" ] ; do
+    echo "Waiting for vault to be available in $${region} ..."
+    sleep 5
+    vault_service_avail=$(curl --silent "http://127.0.0.1:8500/v1/catalog/service/vault?dc=$${region}" | jq -r '.[0].Address')
+  done
+done
+
 # consul read/write functions
 cget() { curl -sf http://127.0.0.1:8500/v1/kv/service/vault/$1?raw; }
 cput() { curl -sfX PUT --output /dev/null http://127.0.0.1:8500/v1/kv/service/vault/$1 -d $2; }
@@ -138,3 +147,5 @@ if [ "${launch_nomad_jobs_automatically}" = true ] ; then
   /usr/local/bin/nomad run /home/${ssh_user_name}/nomad/application-deployment/transit-app-example/transit-app-example-library.nomad
 fi
 
+# Launch consul-template and spork-frontend in a container
+source /tmp/files/ctmpl-spork-frontend.sh

@@ -49,7 +49,7 @@ resource "aws_instance" "db" {
   ebs_optimized               = false
   iam_instance_profile        = "${var.instance_profile}"
 
-  tags {
+  tags = {
     Name             = "${var.cluster_name} - mysql-database"
     Environment-Name = "${var.environment_name}"
     role             = "database"

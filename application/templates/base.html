@@ -22,9 +22,23 @@
                 Home
               </a>
 	      {% if conf['CONSUL']['DEBUG'] == 'True'  %}
-              <a class="navbar-item is-selected" href="serviced">
-                Service Discovery
+              <div class="navbar-item has-dropdown is-hoverable">
+		<a class="navbar-link">
+                Service Mesh
               </a>
+               <div class="navbar-dropdown">
+                 <a class="navbar-item">
+                   <a class="navbar-item is-selected" href="serviced">
+             	    Service Discovery
+	          </a>
+                </a>
+                 <a class="navbar-item">
+                   <a class="navbar-item is-selected" href="serviceseg">
+             	    Service Segmentation
+	          </a>
+                </a>
+               </div>
+	      </div>
 	      {% endif %}
               <a class="navbar-item" href="records">
                 Records

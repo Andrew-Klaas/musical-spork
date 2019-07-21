@@ -3,7 +3,7 @@ resource "aws_lb" "vault" {
   name               = "${var.environment_name}-vault"
   load_balancer_type = "application"
   internal           = false
-  subnets            = ["${var.public_subnet_ids}"]
+  subnets            = "${var.public_subnet_ids}"
   security_groups    = ["${aws_security_group.allow_all_hashistack.id}"]
 }
 
@@ -33,7 +33,7 @@ resource "aws_lb" "fabio" {
   name               = "${var.environment_name}-fabio"
   load_balancer_type = "network"
   internal           = false
-  subnets            = ["${var.public_subnet_ids}"]
+  subnets            = "${var.public_subnet_ids}"
 }
 
 resource "aws_lb_target_group" "fabio-ui" {
@@ -74,7 +74,7 @@ resource "aws_lb" "nomad" {
   name               = "${var.environment_name}-nomad"
   load_balancer_type = "application"
   internal           = false
-  subnets            = ["${var.public_subnet_ids}"]
+  subnets            = "${var.public_subnet_ids}"
   security_groups    = ["${aws_security_group.allow_all_hashistack.id}"]
 }
 

@@ -12,6 +12,7 @@ variable "image_release" {
   description = "machine metadata (ami tag etc) indicating image version; test, beta, stable etc"
 }
 
+
 variable "env_name" {
   description = "Tag indicating environment name"
 }
@@ -20,7 +21,6 @@ variable "nginx_count" {
   description = "Nginx server count"
   default     = 2
 }
-
 
 variable "operating_system" {
   default     = "centos"
@@ -43,7 +43,7 @@ variable "ttl" {
 }
 
 variable "launch_nomad_jobs_automatically" {
-  type        = "string"
+  type        = string
   default     = "true"
   description = "Enable or disable automatic Nomad deployment of Fabio and other demo applications"
 }
@@ -51,11 +51,11 @@ variable "launch_nomad_jobs_automatically" {
 variable "vault_auto_replication_setup" {
   default     = "true"
   description = "Enable or disable automatic replication configuration between Vault clusters"
-  }
+}
 
 variable "vault_cloud_auto_init_and_unseal" {
-  default = "true"
-  type        = "string"
+  default     = "true"
+  type        = string
   description = "Enable or disable automatic Vault initialization and unseal. True or false, string."
 }
 

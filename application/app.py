@@ -13,13 +13,14 @@ import db_client
 dbc = None
 vclient = None
 hostname = socket.gethostname()
+os.environ['no_proxy'] = '127.0.0.1,localhost'
 
 log_level = {
   'CRITICAL' : 50,
-  'ERROR'	   : 40,
-  'WARN'  	 : 30,
-  'INFO'	   : 20,
-  'DEBUG'	   : 10
+  'ERROR'       : 40,
+  'WARN'       : 30,
+  'INFO'       : 20,
+  'DEBUG'       : 10
 }
 
 logger = logging.getLogger('app')
@@ -32,23 +33,34 @@ class DatacenterClass:
     def __init__(self,location):
         self.location = location
         self.url = None
+        self.query = None
+        self.service = None
+        self.target = None
+        self.color = None
+        self.count = None
         self.urlResult = None
         self.jsonResult = None
 
 datacenterlist = []
 
 # Get datacenter info based on the location and store it in an array
-def get_datacenter_info(location):
+def get_datacenter_info(location,target):
     logger.debug('Datacenter: {}'.format(location))
-    x = DatacenterClass(location)
-    x.url = "http://profitapp.query.{}.consul:8080".format(location)
-    x.urlResult = requests.get(x.url).content
-    x.jsonResult = json.loads(x.urlResult)
-    x.color = x.jsonResult['NOMAD_GROUP_NAME']
+    try:
+      x = DatacenterClass(location)
+      x.query = json.loads(requests.get("http://127.0.0.1:8500/v1/query/{}/execute?dc={}".format(target, location)).content)
+      x.service = x.query['Nodes'][0]['Service']
+      x.target = "{}.query.consul".format(target)
+      x.url = "http://" + x.service['Address'] + ":" + str(x.service['Port'])
+      x.urlResult = requests.get(x.url).content
+      logger.warn(x.urlResult)
+      x.jsonResult = json.loads(x.urlResult)
+      x.color = x.jsonResult['NOMAD_GROUP_NAME']
+      x.count = len(x.query['Nodes'])
+    except Exception:
+      x = None
+      logger.exception("Fatal error in datacenter query")
     datacenterlist.append(x)
-    
-
-
 
 def read_config():
   conf = configparser.ConfigParser()
@@ -56,9 +68,9 @@ def read_config():
     conf.read_file(f)
   return conf
 
-#@app.context_processor
-#def inject_dict_for_all_templates():
-#    return dict(conf=read_config())
+@app.context_processor
+def inject_dict_for_all_templates():
+    return dict(hostname= hostname)
 
 @app.route('/customers', methods=['GET'])
 def get_customers():
@@ -69,22 +81,51 @@ def get_customers():
 
 @app.route('/serviced', methods=['GET'])
 def get_serviced():
+    logger.warn('In serviced')
     #Clear out datacenter list
     datacenterlist.clear()
-
-    locations = []
     #Get data from URL Query
-    dclocations=request.args.get("dclocations")
-    if dclocations == None:
-        dclocations = 'us-east-1,us-west-2'
-    
-    # Turn dclocation into array called location
-    for item in dclocations.split(','): # comma, or other
-        locations.append(item) 
-    for l in locations:
-        get_datacenter_info(l)
+    dclocations = json.loads(requests.get("http://127.0.0.1:8500/v1/catalog/datacenters").content)
+    qtarget = request.args.get("filter")
+    if qtarget == None:
+        qtarget = 'profitapp'
+
+    for l in dclocations:
+        get_datacenter_info(l, qtarget)
     return render_template('serviced.html',datacenters=datacenterlist,conf=read_config())
 
+@app.route('/serviceseg', methods=['GET'])
+def get_serviceseg():
+
+    defaultServiceURL = "http://profitapp-connect.service.consul:8080"
+    connectEnabled = False
+
+    serviceURL = request.args.get("serviceurl")
+
+
+    if serviceURL == None:
+        serviceURL = defaultServiceURL
+
+    if "127.0.0.1" in serviceURL:
+        connectEnabled = True
+
+    #logger.warn(urlResult)
+    return render_template('serviceseg.html',conf=read_config(),serviceurl=serviceURL,connectenabled=connectEnabled)
+
+@app.route('/serviceexecute',methods=['GET'])
+def get_serviceexecute():
+
+    try:
+        serviceURL = request.args.get("serviceurl")
+        logger.warn(serviceURL)
+        urlResult = requests.get(serviceURL).content
+        urlResult = json.loads(urlResult)
+    except Exception as e:
+        if "127.0.0.1" in serviceURL:
+            return "The Consul Connect Proxy is not working properly.  Exception: {}".format(e)
+        else:
+            return "Please check that the DNS service is working properly or the service name is valid"
+    return json.dumps(urlResult)
 
 @app.route('/customer', methods=['GET'])
 def get_customer():
@@ -120,7 +161,7 @@ def update_customer():
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('index.html', hostname = hostname, conf=dict(read_config()))
+    return render_template('index.html', conf=dict(read_config()))
 
 @app.route('/records', methods=['GET'])
 def records():
@@ -159,8 +200,9 @@ def update_submit():
     return render_template('records.html', results = json.loads(records), record_updated = True,conf=read_config())
 
 if __name__ == '__main__':
+  #logger.warn('In Main...')
   conf = read_config()
-  
+
   logging.basicConfig(
     level=log_level[conf['DEFAULT']['LogLevel']],
     format='%(asctime)s - %(levelname)8s - %(name)9s - %(funcName)15s - %(message)s'
@@ -178,25 +220,24 @@ if __name__ == '__main__':
         dbc.init_vault(addr=conf['VAULT']['Address'], token=vault_token, path=conf['VAULT']['KeyPath'], key_name=conf['VAULT']['KeyName'])
         if conf['VAULT']['DynamicDBCreds'].lower() == 'true':
           dbc.vault_db_auth(conf['VAULT']['DynamicDBCredsPath'])
-          dbc.init_db(uri=conf['DATABASE']['Address'], 
-          prt=conf['DATABASE']['Port'], 
-          uname=dbc.username, 
-          pw=dbc.password, 
+          dbc.init_db(uri=conf['DATABASE']['Address'],
+          prt=conf['DATABASE']['Port'],
+          uname=dbc.username,
+          pw=dbc.password,
           db=conf['DATABASE']['Database']
           )
-      
+
       if dbc.is_initialized is False: # we didn't use dynamic credentials
         logger.info('Using DB credentials from config.ini...')
         dbc.init_db(
-          uri=conf['DATABASE']['Address'], 
-          prt=conf['DATABASE']['Port'], 
-          uname=conf['DATABASE']['User'], 
-          pw=conf['DATABASE']['Password'], 
+          uri=conf['DATABASE']['Address'],
+          prt=conf['DATABASE']['Port'],
+          uname=conf['DATABASE']['User'],
+          pw=conf['DATABASE']['Password'],
           db=conf['DATABASE']['Database']
-        )  
+        )
     logger.info('Starting Flask server on {} listening on port {}'.format('0.0.0.0', '5000'))
     app.run(host='0.0.0.0', port=5000)
 
   except Exception as e:
     logging.error("There was an error starting the server: {}".format(e))
-  

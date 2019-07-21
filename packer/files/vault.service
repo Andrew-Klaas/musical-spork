@@ -12,6 +12,9 @@ ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGTERM
 User=vault
 Group=vault
+RestartSec=6
+StartLimitBurst=100
+StartLimitIntervalSec=650
 LimitMEMLOCK=infinity
 
 [Install]

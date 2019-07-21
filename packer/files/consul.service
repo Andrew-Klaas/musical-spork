@@ -9,6 +9,9 @@ RestartSec=5
 ExecStart=/usr/local/bin/consul agent -config-dir /etc/consul.d 
 ExecReload=/bin/kill -HUP $MAINPID
 KillSignal=SIGTERM
+RestartSec=6
+StartLimitBurst=100
+StartLimitIntervalSec=650
 User=consul
 Group=consul
 
