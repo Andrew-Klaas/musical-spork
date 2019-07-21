@@ -53,7 +53,8 @@ resource "aws_instance" "admin" {
     source      = "${path.module}/nomad"
     destination = "/home/${var.ssh_user_name}"
 
-    connection {
+    connection  {
+      host = self.public_ip
       type        = "ssh"
       user        = "${var.ssh_user_name}"
       private_key = "${var.private_key_data}"
@@ -65,13 +66,14 @@ resource "aws_instance" "admin" {
     destination = "/home/${var.ssh_user_name}"
 
     connection {
+      host = self.public_ip
       type        = "ssh"
       user        = "${var.ssh_user_name}"
       private_key = "${var.private_key_data}"
     }
   }
 
-  tags {
+  tags = {
     Name             = "${var.cluster_name} - admin"
     Environment-Name = "${var.environment_name}"
     role             = "admin"
@@ -104,8 +106,8 @@ data "template_file" "admin" {
 data "template_file" "format_ssh" {
   template = "connect to host with following command: ssh $${user}@$${admin} -i private_key.pem"
 
-  vars {
-    admin = "${aws_instance.admin.public_ip}"
+  vars = {
+    admin = "${aws_instance.admin[0].public_ip}"
     user  = "${var.ssh_user_name}"
   }
 }

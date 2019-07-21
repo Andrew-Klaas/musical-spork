@@ -9,7 +9,7 @@ resource "random_id" "post_num" {
 
 resource "aws_route53_record" "vault" {
   count   = "${var.vanity_domain == "none" ? 0 : 1}"
-  zone_id = "${data.aws_route53_zone.selected.zone_id}"
+  zone_id = "${data.aws_route53_zone.selected[count.index].zone_id}"
   name    = "vault-${random_id.post_num.dec}.${var.vanity_domain}"
   type    = "CNAME"
   ttl     = "300"
@@ -18,7 +18,7 @@ resource "aws_route53_record" "vault" {
 
 resource "aws_route53_record" "fabio" {
   count   = "${var.vanity_domain == "none" ? 0 : 1}"
-  zone_id = "${data.aws_route53_zone.selected.zone_id}"
+  zone_id = "${data.aws_route53_zone.selected[count.index].zone_id}"
   name    = "fabio-${random_id.post_num.dec}.${var.vanity_domain}"
   type    = "CNAME"
   ttl     = "300"
@@ -27,7 +27,7 @@ resource "aws_route53_record" "fabio" {
 
 resource "aws_route53_record" "nomad" {
   count   = "${var.vanity_domain == "none" ? 0 : 1}"
-  zone_id = "${data.aws_route53_zone.selected.zone_id}"
+  zone_id = "${data.aws_route53_zone.selected[count.index].zone_id}"
   name    = "nomad-${random_id.post_num.dec}.${var.vanity_domain}"
   type    = "CNAME"
   ttl     = "300"

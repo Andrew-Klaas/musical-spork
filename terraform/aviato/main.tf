@@ -49,7 +49,7 @@ resource "aws_instance" "haproxy" {
   ebs_optimized               = false
   iam_instance_profile        = "${var.instance_profile}"
 
-  tags {
+  tags = {
     Name             = "${var.cluster_name} - haproxy"
     Environment-Name = "${var.environment_name}"
     role             = "haproxy"
@@ -107,7 +107,7 @@ resource "aws_instance" "nginx" {
   ebs_optimized               = false
   iam_instance_profile        = "${var.instance_profile}"
 
-  tags {
+  tags = {
     Name             = "${var.cluster_name} - nginx"
     Environment-Name = "${var.environment_name}"
     role             = "nginx"

@@ -41,5 +41,5 @@ variable "vanity_domain" {
 }
 
 output "db_address" {
-  value = "${var.vanity_domain == "none" ? "${aws_instance.db.public_ip}" : "${element(concat(aws_route53_record.db.*.name, list("")), 0)}"}"
+  value = "${var.vanity_domain == "none" ? "${aws_instance.db[0].public_ip}" : "${element(concat(aws_route53_record.db.*.name, list("")), 0)}"}"
 }

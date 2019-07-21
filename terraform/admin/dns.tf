@@ -9,9 +9,9 @@ resource "random_id" "post_num" {
 
 resource "aws_route53_record" "consul" {
   count   = "${var.vanity_domain == "none" ? 0 : 1}"
-  zone_id = "${data.aws_route53_zone.selected.zone_id}"
+  zone_id = "${data.aws_route53_zone.selected[count.index].zone_id}"
   name    = "consul-${random_id.post_num.dec}.${var.vanity_domain}"
   type    = "A"
   ttl     = "300"
-  records = ["${aws_instance.admin.public_ip}"]
+  records = ["${aws_instance.admin[count.index].public_ip}"]
 }

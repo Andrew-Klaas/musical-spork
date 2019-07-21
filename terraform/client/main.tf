@@ -49,7 +49,7 @@ resource "aws_instance" "client" {
   ebs_optimized               = false
   iam_instance_profile        = "${var.instance_profile}"
 
-  tags {
+  tags = {
     Name             = "${var.cluster_name} - client"
     Environment-Name = "${var.environment_name}"
     role             = "client"
@@ -74,8 +74,8 @@ data "template_file" "client" {
 data "template_file" "format_ssh" {
   template = "connect to host with following command: ssh $${user}@$${client} -i private_key.pem"
 
-  vars {
-    client = "${aws_instance.client.public_ip}"
+  vars = {
+    client = "${aws_instance.client[0].public_ip}"
     user  = "${var.ssh_user_name}"
   }
 }

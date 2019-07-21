@@ -4,12 +4,12 @@ resource "aws_iam_user" "vault_validation" {
 }
 
 resource "aws_iam_access_key" "vault" {
-  user = "${aws_iam_user.vault_validation.name}"
+  user = aws_iam_user.vault_validation.name
 }
 
 resource "aws_iam_user_policy" "vault_ro" {
   name = "${random_id.environment_name.hex}_vault_validation_policy"
-  user = "${aws_iam_user.vault_validation.name}"
+  user = aws_iam_user.vault_validation.name
 
   policy = <<EOF
 {
@@ -40,4 +40,6 @@ resource "aws_iam_user_policy" "vault_ro" {
   ]
 }
 EOF
+
 }
+
